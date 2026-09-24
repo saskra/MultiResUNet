@@ -1,8 +1,5 @@
-from keras.layers import Input, Conv2D, MaxPooling2D, Conv2DTranspose, concatenate, BatchNormalization, Activation, add
-from keras.models import Model, model_from_json
-from keras.optimizers import Adam
-from keras.layers.advanced_activations import ELU, LeakyReLU
-from keras.utils.vis_utils import plot_model
+from tensorflow.keras.layers import Input, Conv2D, MaxPooling2D, Conv2DTranspose, concatenate, BatchNormalization, Activation, add
+from tensorflow.keras.models import Model
 
 
 
@@ -139,15 +136,18 @@ def ResPath(filters, length, inp):
     return out
 
 
-def MultiResUnet(height, width, n_channels):
+def MultiResUnet(height, width, n_channels, n_classes=1):
     '''
     MultiResUNet
-    
+
     Arguments:
-        height {int} -- height of image 
-        width {int} -- width of image 
+        height {int} -- height of image
+        width {int} -- width of image
         n_channels {int} -- number of channels in image
-    
+
+    Keyword Arguments:
+        n_classes {int} -- number of output classes/channels (default: {1}, i.e. the original binary-segmentation behaviour)
+
     Returns:
         [keras model] -- MultiResUNet model
     '''
@@ -189,7 +189,7 @@ def MultiResUnet(height, width, n_channels):
         2, 2), padding='same')(mresblock8), mresblock1], axis=3)
     mresblock9 = MultiResBlock(32, up9)
 
-    conv10 = conv2d_bn(mresblock9, 1, 1, 1, activation='sigmoid')
+    conv10 = conv2d_bn(mresblock9, n_classes, 1, 1, activation='sigmoid')
     
     model = Model(inputs=[inputs], outputs=[conv10])
 
